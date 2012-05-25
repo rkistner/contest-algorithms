@@ -16,9 +16,11 @@
 
 
 class Graph(object):
-    def edges(self, node):
+    def edges(self, node, **kwargs):
         """
         All edges from node to its neighbours.
+
+        Additional parameters may be passed, for example "distance" - the current shortest distance to node.
 
         Result: {neighbour: weight}
         """
@@ -67,8 +69,10 @@ class GridGraph(Graph):
 
         self.filter = filter
 
+    def distance(self, a, b, **kwargs):
+        return 1
 
-    def edges(self, node):
+    def edges(self, node, **kwargs):
         row, col = node
         neighbours = []
         if row > 0:
@@ -80,7 +84,7 @@ class GridGraph(Graph):
         if row < self.rows - 1:
             neighbours.append((row + 1, col))
 
-        return {n: 1 for n in filter(self.node_filter, neighbours)}
+        return {n: self.distance(node, n, **kwargs) for n in filter(self.node_filter, neighbours)}
 
     def node_filter(self, node):
         return self.filter(self.value(node))
@@ -131,7 +135,7 @@ class DirectedGraph(Graph):
             for b, weight in edges.items():
                 self.add_edge(a, b, weight)
 
-    def edges(self, node):
+    def edges(self, node, **kwargs):
         return self.G[node]
 
     def add_edge(self, a, b, weight):
@@ -254,7 +258,7 @@ def dijkstra(graph, start, end=None):
             break
 
         # Loop through neighbours
-        edges = graph.edges(node)
+        edges = graph.edges(node, distance=distance)
         for neighbour, length in edges.items():
             total = distance + length
             if neighbour in distances:
