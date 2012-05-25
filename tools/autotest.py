@@ -70,8 +70,8 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         expected_path = path.replace(".in", ".out")
         start = time.time()
         if not self.inout:
-            infile = file(path, 'r')
-            outfile = file(run_path, 'w')
+            infile = open(path, 'r')
+            outfile = open(run_path, 'w')
             print("==> Testing input file %s..." % path)
             self.run_app(infile, outfile)
             infile.close()
@@ -89,9 +89,9 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         tdiff = end - start
 
         print("==> Output vs expected output")
-        run_output = file(run_path, 'r').readlines()
+        run_output = open(run_path, 'r').readlines()
         try:
-            expected_output = file(expected_path, 'r').readlines()
+            expected_output = open(expected_path, 'r').readlines()
         except:
             expected_output = []
         N = max(len(run_output), len(expected_output))
@@ -128,7 +128,7 @@ class OnWriteHandler(pyinotify.ProcessEvent):
     
     def run_app(self, stdin=None, stdout=None):
         if self.app.endswith(".py"):
-            subprocess.call(['python', self.app], stdin=stdin, stdout=stdout)
+            subprocess.call(['python3', self.app], stdin=stdin, stdout=stdout)
         elif self.app.endswith(".java"):
             klass = self.app.replace(".java", "")
             subprocess.call(['java', klass], stdin=stdin, stdout=stdout)

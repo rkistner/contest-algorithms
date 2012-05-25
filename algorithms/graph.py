@@ -22,9 +22,11 @@ class Graph(object):
 
         Additional parameters may be passed, for example "distance" - the current shortest distance to node.
 
+        If the node does not exist, an empty dictionary will be returned.
+
         Result: {neighbour: weight}
         """
-        pass
+        return {}
 
     def nodes(self):
         """
@@ -32,13 +34,19 @@ class Graph(object):
 
         The value of each node is implementation-specific.
         """
-        pass
+        return []
 
     def value(self, node):
         """
         Returns the value associated with a node. Optional.
         """
-        pass
+        return None
+
+    def total_edges(self):
+        total = 0
+        for node in self.nodes():
+            total += len(self.edges(node))
+        return total
 
 
 class GridGraph(Graph):
@@ -112,7 +120,7 @@ class GridGraph(Graph):
 
 
 class DirectedGraph(Graph):
-    def __init__(self, G):
+    def __init__(self, G=None):
         """
         The input graph G is assumed to have the following
         representation: A vertex can be any object that can
@@ -130,15 +138,16 @@ class DirectedGraph(Graph):
         >>> sorted(g.edges(2).keys())
         [3]
         """
+        G = G or {}
         self.G = {}
         for a, edges in G.items():
             for b, weight in edges.items():
                 self.add_edge(a, b, weight)
 
     def edges(self, node, **kwargs):
-        return self.G[node]
+        return self.G.get(node) or {}
 
-    def add_edge(self, a, b, weight):
+    def add_edge(self, a, b, weight=1):
         if not a in self.G:
             self.G[a] = {}
         if not b in self.G:
@@ -148,9 +157,15 @@ class DirectedGraph(Graph):
     def nodes(self):
         return self.G.keys()
 
+    def __str__(self):
+        return str(self.G)
+
+    def __repr__(self):
+        return "<Directed %s>" % self
+
 
 class UndirectedGraph(DirectedGraph):
-    def __init__(self, G):
+    def __init__(self, G=None):
         """
         The input graph G is assumed to have the following
         representation: A vertex can be any object that can
@@ -173,9 +188,15 @@ class UndirectedGraph(DirectedGraph):
 
         super(UndirectedGraph, self).__init__(G)
 
-    def add_edge(self, a, b, weight):
+    def add_edge(self, a, b, weight=1):
         super(UndirectedGraph, self).add_edge(a, b, weight)
         super(UndirectedGraph, self).add_edge(b, a, weight)
+
+    def total_edges(self):
+        return super().total_edges() // 2
+
+    def __repr__(self):
+        return "<Undirected %s>" % self
 
 
 def floodfill(graph):
