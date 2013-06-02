@@ -17,7 +17,7 @@ An alternative implementation of reverse edges does the following:
 
 For maximum matching, simply create a bipartite graph and to max flow.
 */
-public class MaxFlow {
+public class MaxFlowAlternative {
     static class Node {
         int n;
         boolean start, end; // Is this the source or sink?

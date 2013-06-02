@@ -3,9 +3,14 @@
 # Uses https://github.com/rkistner/contest-algorithms
 
 import sys
+
+
+def debug(*args):
+    print(*args, file=sys.stderr)
+
 fin = sys.stdin
 T = int(fin.readline())
-for case in range(1,T+1):
+for case in range(1, T + 1):
     N = int(fin.readline())
     numbers = map(int, fin.readline().split())
 

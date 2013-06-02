@@ -1,9 +1,13 @@
 
-# 3x binary search
-
 def bisect_left(func, val, low, high):
     """
     Like bisect.bisect_left, but works on functions.
+
+    Return the index where to insert item x in list a, assuming a is sorted.
+
+    The return value i is such that all e in a[:i] have e < x, and all e in a[i:] have e >= x.  So if x already appears
+    in the list, a.insert(x) will insert just before the leftmost x already there.  Optional args lo (default 0) and hi
+    (default len(a)) bound the slice of a to be searched.
 
     >>> bisect_left([1,2,3,3,4].__getitem__, 3, 0, 4)
     2
@@ -12,6 +16,7 @@ def bisect_left(func, val, low, high):
     >>> bisect_left([1,2,3,6,8].__getitem__, 4, 0, 4)
     3
     """
+
     a = low
     b = high
     while b > a:
@@ -28,12 +33,30 @@ def bisect_right(func, val, low, high):
     """
     Like bisect.bisect_right, but works on functions.
 
-    >>> bisect_right([1,2,3,3,4].__getitem__, 3, 0, 5)
+    Return the index where to insert item x in list a, assuming a is sorted.
+
+    low: the minimum possible value
+    high: the maximum possible value + 1
+
+    The return value i is such that all e in a[:i] have e <= x, and all e in a[i:] have e > x.  So if x already appears
+    in the list, a.insert(x) will insert just after the rightmost x already there.
+
+    >>> bisect_right([1,2,3,3,4].__getitem__, val=3, low=0, high=5)
     4
-    >>> bisect_right([1,2,3,3,4].__getitem__, 4, 0, 5)
+    >>> bisect_right([1,2,3,3,4].__getitem__, val=4, low=0, high=5)
     5
-    >>> bisect_left([1,2,3,6,8].__getitem__, 4, 0, 4)
+    >>> bisect_right([1,2,3,3,4].__getitem__, val=4, low=0, high=4)
+    4
+    >>> bisect_left([1,2,3,6,8].__getitem__, val=4, low=0, high=5)
     3
+    >>> bisect_left([1,2,3,6,8].__getitem__, val=0, low=0, high=5)
+    0
+
+    When searching for 3, the following will be returned:
+    [1,2,3,3,*4*]
+    [1,2,*4*,5]
+    [1,2,2,*]
+
     """
     a = low
     b = high
