@@ -88,35 +88,39 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         end = time.time()
         tdiff = end - start
 
-        print("==> Output vs expected output")
         run_output = open(run_path, 'r').readlines()
         try:
             expected_output = open(expected_path, 'r').readlines()
         except:
-            expected_output = []
-        N = max(len(run_output), len(expected_output))
-        diff = False
-        for i in range(N):
-            if i < len(run_output):
-                r = run_output[i].strip()
-            else:
-                r = ""
-            if i < len(expected_output):
-                e = expected_output[i].strip()
-            else:
-                e = ""
-            if r == e:
-                print("%2d:   %s" % (i + 1, r))
-            else:
-                diff = True
-                print("%2d: ! %s ! %s !" % (i + 1, r, e))
+            expected_output = None
+        if expected_output is None:
+            print("==> Test output")
+            for line in run_output:
+                print(line)
 
-        #subprocess.call(['diff', '-y', '-b', '-N', run_path, expected_path])
-        
-        if diff:
-            print("Invalid output")
         else:
-            print("Output matched")
+            print("==> Output vs expected output")
+            N = max(len(run_output), len(expected_output))
+            diff = False
+            for i in range(N):
+                if i < len(run_output):
+                    r = run_output[i].strip()
+                else:
+                    r = ""
+                if i < len(expected_output):
+                    e = expected_output[i].strip()
+                else:
+                    e = ""
+                if r == e:
+                    print("%2d:   %s" % (i + 1, r))
+                else:
+                    diff = True
+                    print("%2d: ! %s ! %s !" % (i + 1, r, e))
+
+            if diff:
+                print("Invalid output")
+            else:
+                print("Output matched")
         print("==> %.3fs ------------- %s ----------------" % (tdiff, path))
 
     def compile(self):
