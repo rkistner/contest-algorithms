@@ -46,6 +46,11 @@ import hashlib
 import time
 import shutil
 
+import colorama
+from colorama import Fore, Back, Style
+
+colorama.init()
+
 def md5_for_file(f, block_size=2**20):
     md5 = hashlib.md5()
     while True:
@@ -72,14 +77,14 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         if not self.inout:
             infile = open(path, 'r')
             outfile = open(run_path, 'w')
-            print("==> Testing input file %s..." % path)
+            print(Fore.BLUE + ("==> Testing input file %s..." % path) + Fore.RESET)
             self.run_app(infile, outfile)
             infile.close()
             outfile.close()
         else:
             if path == self.name + ".in":
                 return
-            print("==> Testing input file %s..." % path)
+            print(Fore.BLUE + ("==> Testing input file %s..." % path) + Fore.RESET)
             run_path = self.name + ".out"
             shutil.copyfile(path, self.name + ".in")
             self.run_app()
@@ -94,12 +99,12 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         except:
             expected_output = None
         if expected_output is None:
-            print("==> Test output")
+            print(Fore.BLUE + "==> Test output" + FORE.RESET)
             for line in run_output:
                 print(line)
 
         else:
-            print("==> Output vs expected output")
+            print(Fore.BLUE + "==> Output vs expected output" + Fore.RESET)
             N = max(len(run_output), len(expected_output))
             diff = False
             for i in range(N):
@@ -115,13 +120,13 @@ class OnWriteHandler(pyinotify.ProcessEvent):
                     print("%2d:   %s" % (i + 1, r))
                 else:
                     diff = True
-                    print("%2d: ! %s ! %s !" % (i + 1, r, e))
+                    print(("%2d: ! %s%s%s ! %s%s%s !" % (i + 1, Fore.RED, r, Fore.RESET, Fore.GREEN, e, Fore.RESET)))
 
             if diff:
-                print("Invalid output")
+                print(Fore.RED + "Invalid output" + Fore.RESET)
             else:
-                print("Output matched")
-        print("==> %.3fs ------------- %s ----------------" % (tdiff, path))
+                print(Fore.GREEN + "Output matched" + Fore.RESET)
+        print(Fore.BLUE + ("==> %.3fs ------------- %s ----------------" % (tdiff, path)) + Fore.RESET)
 
     def compile(self):
         if self.app.endswith(".java"):
@@ -169,7 +174,7 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         short_path = path.replace(cwd, '')
         if short_path == self.app:
             if self.is_modified(path):
-                print('==> Source code modified for %s' % path)
+                print(Fore.BLUE + ('==> Source code modified for %s' % path) + Fore.RESET)
                 self.run_all()
         else:
             for g in self.input_files:
@@ -192,7 +197,7 @@ def auto_compile(path, input_files, inout):
     notifier = pyinotify.Notifier(wm, default_proc_fun=handler)
     wm.add_watch(path, pyinotify.ALL_EVENTS, rec=False, auto_add=False)
     wm.add_watch('.', pyinotify.ALL_EVENTS, rec=True, auto_add=True)
-    print('==> Start monitoring %s, %s (type c^c to exit)' % (path, input_files))
+    print(Fore.BLUE + ('==> Start monitoring %s, %s (type c^c to exit)' % (path, input_files)) + Fore.RESET)
     notifier.loop()
 
 if __name__ == '__main__':
