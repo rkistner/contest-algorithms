@@ -99,9 +99,9 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         except:
             expected_output = None
         if expected_output is None:
-            print(Fore.BLUE + "==> Test output" + FORE.RESET)
+            print(Fore.BLUE + "==> Test output" + Fore.RESET)
             for line in run_output:
-                print(line)
+                print(line[:-1])
 
         else:
             print(Fore.BLUE + "==> Output vs expected output" + Fore.RESET)
@@ -133,6 +133,9 @@ class OnWriteHandler(pyinotify.ProcessEvent):
             return subprocess.call(['javac', self.app])
         if self.app.endswith(".scala"):
             return subprocess.call(['scalac', self.app])
+        if self.app.endswith(".cpp"):
+            klass = self.app.replace(".cpp", "")
+            subprocess.call(['g++', '-O3', '-std=c++14', '-lm', self.app, '-o', klass])
         return 0
     
     def run_app(self, stdin=None, stdout=None):
@@ -141,6 +144,9 @@ class OnWriteHandler(pyinotify.ProcessEvent):
         elif self.app.endswith(".java"):
             klass = self.app.replace(".java", "")
             subprocess.call(['java', klass], stdin=stdin, stdout=stdout)
+        elif self.app.endswith(".cpp"):
+            klass = self.app.replace(".cpp", "")
+            subprocess.call(['./' + klass], stdin=stdin, stdout=stdout)
         elif self.app.endswith(".scala"):
             klass = self.app.replace(".scala", "")
             subprocess.call(['scala', klass], stdin=stdin, stdout=stdout)
